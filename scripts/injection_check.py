@@ -23,15 +23,19 @@ INJECTED_GUIDELINES = ("testing.md", "coding-style.md", "review-criteria.md", "d
 
 # 지켜야 할 주입 맵: {지침: {이 지침을 참조해야 하는 소비처(.claude/ 기준 상대경로)}}.
 # 이 맵이 곧 "의도된 배선"의 단일 출처다. 배선을 바꾸면 여기도 함께 고친다.
+# 그 지침을 실제로 써야 하는 소비처만 넣는다 — 예로 ralph-loop 스킬이 없는 것은
+# 누락이 아니라, 코드를 쓰는 주체가 ralph-worker이고 스킬은 지표로만 판정하기 때문이다.
 REQUIRED_INJECTIONS = {
     "testing.md": {
         "agents/test-writer.md",
         "agents/review-tests.md",
+        "agents/ralph-worker.md",
         "skills/feature-dev/SKILL.md",
     },
     "coding-style.md": {
         "agents/impl-writer.md",
         "agents/test-writer.md",
+        "agents/ralph-worker.md",
         "skills/feature-dev/SKILL.md",
     },
     "review-criteria.md": {
@@ -153,7 +157,8 @@ def check_repo(root=None):
 
     missing_files = sorted(g for g in INJECTED_GUIDELINES if g not in existing)
 
-    # CLAUDE.md는 4개 주입 지침을 모두 참조해야 한다(전역 안내).
+    # CLAUDE.md는 INJECTED_GUIDELINES를 모두 참조해야 한다(전역 안내).
+    # 개수를 주석에 적지 않는다 — 지침이 늘 때마다 주석이 뒤처지는 드리프트를 막는다.
     with open(os.path.join(root, "CLAUDE.md"), "r", encoding="utf-8") as f:
         claudemd = f.read()
     claudemd_refs = referenced_guidelines(claudemd, INJECTED_GUIDELINES)
